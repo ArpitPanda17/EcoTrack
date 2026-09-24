@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoTrack | Household Water Usage Analyzer</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="sidebar" id="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">💧</div>
+
+                <div>
+                    <h2>EcoTrack</h2>
+                    <p>Water Analyzer</p>
+                </div>
+            </div>
+
+            <nav class="navigation">
+
+                <button class="nav-item active" data-page="dashboard">
+                    <span>⌂</span>
+                    Dashboard
+                </button>
+
+                <button class="nav-item" data-page="add-data">
+                    <span>＋</span>
+                    Add Usage
+                </button>
+
+                <button class="nav-item" data-page="analysis">
+                    <span>◉</span>
+                    Analysis
+                </button>
+
+                <button class="nav-item" data-page="trends">
+                    <span>↗</span>
+                    Trends
+                </button>
+
+                <button class="nav-item" data-page="insights">
+                    <span>✦</span>
+                    Insights
+                </button>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button class="nav-item" data-page="about">
+                    <span>ⓘ</span>
+                    About Project
+                </button>
+
+                <div class="sidebar-note">
+                    <strong>Track • Analyze • Save</strong>
+                    <p>
+                        Understand your household's
+                        estimated water usage.
+                    </p>
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+        <main class="main-content">
+
+            <!-- Mobile top bar -->
+            <header class="mobile-header">
+
+                <button class="menu-button" id="menuButton">
+                    ☰
+                </button>
+
+                <div class="mobile-brand">
+                    💧 EcoTrack
+                </div>
+
+            </header>
+
+
+            <!-- ================= DASHBOARD ================= -->
+            <section class="page active" id="dashboard">
+
+                <div class="page-header">
+
+                    <div>
+                        <p class="eyebrow">HOUSEHOLD WATER ANALYZER</p>
+
+                        <h1>Good to see you 👋</h1>
+
+                        <p class="page-description">
+                            Understand your household's water consumption.
+                        </p>
+                    </div>
+
+                    <div class="header-actions">
+
+                        <div class="connection-status">
+                            <span class="status-dot" id="statusDot"></span>
+                            <span id="apiStatus">Checking backend...</span>
+                        </div>
+
+                        <button class="primary-button" data-page="add-data">
+                            + Add Today's Usage
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Statistics -->
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>DAILY USAGE</span>
+                            <span class="stat-icon">💧</span>
+                        </div>
+
+                        <strong id="dailyUsage">--</strong>
+
+                        <p>estimated today</p>
+                    </div>
+
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>7-DAY AVERAGE</span>
+                            <span class="stat-icon">📊</span>
+                        </div>
+
+                        <strong id="weeklyAverage">--</strong>
+
+                        <p>estimated litres/day</p>
+                    </div>
+
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>MONTHLY ESTIMATE</span>
+                            <span class="stat-icon">📅</span>
+                        </div>
+
+                        <strong id="monthlyEstimate">--</strong>
+
+                        <p>based on latest usage</p>
+                    </div>
+
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>TOP ACTIVITY</span>
+                            <span class="stat-icon">🌱</span>
+                        </div>
+
+                        <strong id="topActivity">--</strong>
+
+                        <p id="topActivityPercentage">--</p>
+                    </div>
+
+                </div>
+
+
+                <!-- Dashboard charts -->
+                <div class="dashboard-grid">
+
+                    <div class="card chart-card large-card">
+
+                        <div class="card-header">
+
+                            <div>
+                                <h2>Daily Water Consumption</h2>
+                                <p>Recent estimated usage</p>
+                            </div>
+
+                            <span class="mini-badge">7 Days</span>
+
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="card chart-card">
+
+                        <div class="card-header">
+
+                            <div>
+                                <h2>Today's Breakdown</h2>
+                                <p>Usage by activity</p>
+                            </div>
+
+                        </div>
+
+                        <div class="chart-container small-chart">
+                            <canvas id="breakdownChart"></canvas>
+                        </div>
+
+                        <div class="legend" id="breakdownLegend"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Dashboard observations -->
+                <div class="dashboard-grid bottom-grid">
+
+                    <div class="card observation-card">
+
+                        <div class="observation-icon">💧</div>
+
+                        <div>
+                            <span class="section-label">MAIN OBSERVATION</span>
+
+                            <h3 id="mainObservation">
+                                Add usage data to see an observation.
+                            </h3>
+
+                            <p id="mainObservationText">
+                                EcoTrack will analyze your recorded data
+                                and identify your highest-use activity.
+                            </p>
+
+                        </div>
+
+                        <button class="text-button" data-page="analysis">
+                            View Analysis →
+                        </button>
+
+                    </div>
+
+
+                    <div class="card awareness-card">
+
+                        <div class="observation-icon">🌱</div>
+
+                        <div>
+                            <span class="section-label">WATER AWARENESS</span>
+
+                            <h3>
+                                Small changes can matter.
+                            </h3>
+
+                            <p>
+                                Review your largest usage categories
+                                regularly and look for simple ways
+                                to avoid unnecessary water use.
+                            </p>
+                        </div>
+
+                        <button class="text-button" data-page="insights">
+                            View Insights →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ADD DATA ================= -->
+            <section class="page" id="add-data">
+
+                <div class="page-header">
+
+                    <div>
+                        <p class="eyebrow">DATA COLLECTION</p>
+
+                        <h1>Add Usage Data</h1>
+
+                        <p class="page-description">
+                            Enter your household's estimated daily usage information.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <form id="usageForm">
+
+                    <div class="form-card">
+
+                        <div class="form-section">
+
+                            <div class="form-section-title">
+                                <div class="step-number">01</div>
+
+                                <div>
+                                    <h2>Household</h2>
+                                    <p>Basic information about the household.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+                                    <label for="date">
+                                        Date
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="date"
+                                        required
+                                    >
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label for="people">
+                                        Number of people
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="people"
+                                        min="1"
+                                        value="4"
+                                        required
+                                    >
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-divider"></div>
+
+
+                        <div class="form-section">
+
+                            <div class="form-section-title">
+                                <div class="step-number">02</div>
+
+                                <div>
+                                    <h2>Bathing</h2>
+                                    <p>Approximate bathing time and frequency.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+
+                                    <label for="bathingTime">
+                                        Average bathing time
+                                    </label>
+
+                                    <div class="input-with-unit">
+                                        <input
+                                            type="number"
+                                            id="bathingTime"
+                                            min="0"
+                                            value="10"
+                                            required
+                                        >
+
+                                        <span>min</span>
+                                    </div>
+
+                                    <small>
+                                        Approximate minutes per person.
+                                    </small>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="bathsPerDay">
+                                        Baths per person / day
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="bathsPerDay"
+                                        min="0"
+                                        step="0.1"
+                                        value="1"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-divider"></div>
+
+
+                        <div class="form-section">
+
+                            <div class="form-section-title">
+
+                                <div class="step-number">03</div>
+
+                                <div>
+                                    <h2>Washing</h2>
+                                    <p>Enter laundry-related usage.</p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+
+                                    <label for="washingLoads">
+                                        Washing machine loads
+                                    </label>
+
+                                    <div class="input-with-unit">
+
+                                        <input
+                                            type="number"
+                                            id="washingLoads"
+                                            min="0"
+                                            step="0.1"
+                                            value="5"
+                                            required
+                                        >
+
+                                        <span>/ week</span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="handWashing">
+                                        Hand washing / other laundry
+                                    </label>
+
+                                    <div class="input-with-unit">
+
+                                        <input
+                                            type="number"
+                                            id="handWashing"
+                                            min="0"
+                                            value="10"
+                                            required
+                                        >
+
+                                        <span>L/day</span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-divider"></div>
+
+
+                        <div class="form-section">
+
+                            <div class="form-section-title">
+
+                                <div class="step-number">04</div>
+
+                                <div>
+                                    <h2>Other Household Activities</h2>
+                                    <p>Enter approximate daily usage.</p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-grid four-columns">
+
+                                <div class="form-group">
+
+                                    <label for="cleaning">
+                                        Cleaning
+                                    </label>
+
+                                    <div class="input-with-unit">
+
+                                        <input
+                                            type="number"
+                                            id="cleaning"
+                                            min="0"
+                                            value="20"
+                                            required
+                                        >
+
+                                        <span>L</span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="gardening">
+                                        Gardening
+                                    </label>
+
+                                    <div class="input-with-unit">
+
+                                        <input
+                                            type="number"
+                                            id="gardening"
+                                            min="0"
+                                            value="15"
+                                            required
+                                        >
+
+                                        <span>L</span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="cooking">
+                                        Cooking & Drinking
+                                    </label>
+
+                                    <div class="input-with-unit">
+
+                                        <input
+                                            type="number"
+                                            id="cooking"
+                                            min="0"
+                                            value="20"
+                                            required
+                                        >
+
+                                        <span>L</span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="other">
+                                        Other
+                                    </label>
+
+                                    <div class="input-with-unit">
+
+                                        <input
+                                            type="number"
+                                            id="other"
+                                            min="0"
+                                            value="10"
+                                            required
+                                        >
+
+                                        <span>L</span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <p>
+                                Your information is used to estimate
+                                household water consumption.
+                            </p>
+
+                            <button
+                                type="submit"
+                                class="primary-button large-button"
+                            >
+                                Analyze & Save Usage
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+                <div id="formMessage" class="form-message"></div>
+
+            </section>
+
+
+            <!-- ================= ANALYSIS ================= -->
+            <section class="page" id="analysis">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <p class="eyebrow">DATA ANALYSIS</p>
+
+                        <h1>Water Usage Analysis</h1>
+
+                        <p class="page-description">
+                            Here's what your recorded data tells us.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="analysis-summary card">
+
+                    <div>
+
+                        <span class="section-label">
+                            ESTIMATED DAILY CONSUMPTION
+                        </span>
+
+                        <h2 id="analysisDaily">
+                            -- L
+                        </h2>
+
+                        <p id="analysisDate">
+                            No analysis available yet.
+                        </p>
+
+                    </div>
+
+
+                    <div class="per-person-box">
+
+                        <span>PER PERSON / DAY</span>
+
+                        <strong id="perPerson">
+                            -- L
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-grid">
+
+                    <div class="card chart-card large-card">
+
+                        <div class="card-header">
+
+                            <div>
+                                <h2>Water Consumption by Activity</h2>
+                                <p>Estimated daily contribution</p>
+                            </div>
+
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="analysisChart"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="card usage-status-card">
+
+                        <span class="section-label">
+                            PROJECT USAGE BAND
+                        </span>
+
+                        <div class="usage-status" id="usageStatus">
+                            --
+                        </div>
+
+                        <p id="usageStatusText">
+                            Enter and analyze data to see the current usage band.
+                        </p>
+
+                        <details>
+                            <summary>
+                                How was this calculated?
+                            </summary>
+
+                            <p>
+                                EcoTrack divides the estimated daily household
+                                usage by the number of people and compares the
+                                result with the simple reference bands defined
+                                for this school project.
+                            </p>
+
+                            <p>
+                                These are project reference bands, not official
+                                water-use standards.
+                            </p>
+
+                        </details>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card observation-wide">
+
+                    <span class="section-label">
+                        WHAT THE DATA SHOWS
+                    </span>
+
+                    <h2 id="analysisObservation">
+                        Add usage data to generate an observation.
+                    </h2>
+
+                    <p id="analysisObservationText">
+                        Your highest-use activity will be identified
+                        from the recorded data.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= TRENDS ================= -->
+            <section class="page" id="trends">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <p class="eyebrow">HISTORICAL DATA</p>
+
+                        <h1>Usage Trends</h1>
+
+                        <p class="page-description">
+                            See how your estimated water consumption changes over time.
+                        </p>
+
+                    </div>
+
+
+                    <div class="range-buttons">
+
+                        <button
+                            class="range-button active"
+                            data-range="7"
+                        >
+                            7 Days
+                        </button>
+
+                        <button
+                            class="range-button"
+                            data-range="30"
+                        >
+                            30 Days
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stats-grid three-stats">
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <span>AVERAGE</span>
+                            <span class="stat-icon">📊</span>
+                        </div>
+
+                        <strong id="trendAverage">--</strong>
+
+                        <p>litres/day</p>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <span>HIGHEST</span>
+                            <span class="stat-icon">↑</span>
+                        </div>
+
+                        <strong id="trendHighest">--</strong>
+
+                        <p>litres</p>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <span>LOWEST</span>
+                            <span class="stat-icon">↓</span>
+                        </div>
+
+                        <strong id="trendLowest">--</strong>
+
+                        <p>litres</p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card chart-card trend-main-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Daily Estimated Water Usage</h2>
+                            <p>Recorded household consumption</p>
+                        </div>
+
+                    </div>
+
+                    <div class="chart-container trend-chart-height">
+                        <canvas id="historicalChart"></canvas>
+                    </div>
+
+                </div>
+
+
+                <div class="card trend-note">
+
+                    <div class="observation-icon">
+                        📈
+                    </div>
+
+                    <div>
+
+                        <span class="section-label">
+                            TREND NOTE
+                        </span>
+
+                        <h3 id="trendNote">
+                            More recorded data will make trend analysis more useful.
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= INSIGHTS ================= -->
+            <section class="page" id="insights">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <p class="eyebrow">DATA INTERPRETATION</p>
+
+                        <h1>Your Water Insights</h1>
+
+                        <p class="page-description">
+                            Simple observations based on your recorded data.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="insights-grid">
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon">💧</div>
+
+                        <span>HIGHEST USE</span>
+
+                        <h2 id="insightActivity">
+                            --
+                        </h2>
+
+                        <p id="insightActivityText">
+                            Analyze your data to see which activity contributes
+                            the largest estimated share.
+                        </p>
+
+                    </div>
+
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon">📊</div>
+
+                        <span>USAGE PATTERN</span>
+
+                        <h2 id="insightPattern">
+                            --
+                        </h2>
+
+                        <p id="insightPatternText">
+                            Record more days to identify changes in usage.
+                        </p>
+
+                    </div>
+
+
+                    <div class="insight-card">
+
+                        <div class="insight-icon">🌱</div>
+
+                        <span>WATER-SAVING OPPORTUNITY</span>
+
+                        <h2 id="insightSuggestion">
+                            --
+                        </h2>
+
+                        <p id="insightSuggestionText">
+                            EcoTrack will show a simple awareness suggestion.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card insights-note">
+
+                    <span class="section-label">
+                        REMEMBER
+                    </span>
+
+                    <h2>
+                        EcoTrack provides estimates.
+                    </h2>
+
+                    <p>
+                        The results depend on the information entered by the
+                        user and on the assumptions used in this school project.
+                        The purpose is to understand patterns and create awareness.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ABOUT ================= -->
+            <section class="page" id="about">
+
+                <div class="page-header">
+
+                    <div>
+
+                        <p class="eyebrow">PROJECT INFORMATION</p>
+
+                        <h1>About EcoTrack</h1>
+
+                        <p class="page-description">
+                            A simple Data Science project for understanding
+                            household water consumption.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="about-grid">
+
+                    <div class="card about-card">
+
+                        <span class="section-label">
+                            THE PROBLEM
+                        </span>
+
+                        <h2>
+                            Where is household water being used?
+                        </h2>
+
+                        <p>
+                            Water is consumed through many everyday household
+                            activities, but people may not know how much they
+                            are using in total or which activity contributes
+                            the largest share.
+                        </p>
+
+                    </div>
+
+
+                    <div class="card about-card">
+
+                        <span class="section-label">
+                            THE SOLUTION
+                        </span>
+
+                        <h2>
+                            Turn everyday usage into understandable data.
+                        </h2>
+
+                        <p>
+                            EcoTrack collects household usage information,
+                            processes it using R, calculates estimated
+                            consumption and presents the results using
+                            statistics, charts and simple insights.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card technology-card">
+
+                    <span class="section-label">
+                        TECHNOLOGY USED
+                    </span>
+
+                    <div class="technology-grid">
+
+                        <div class="technology-item">
+                            <strong>HTML</strong>
+                            <span>Page structure</span>
+                        </div>
+
+                        <div class="technology-item">
+                            <strong>CSS</strong>
+                            <span>Visual design</span>
+                        </div>
+
+                        <div class="technology-item">
+                            <strong>JavaScript</strong>
+                            <span>Interaction</span>
+                        </div>
+
+                        <div class="technology-item">
+                            <strong>R</strong>
+                            <span>Data analysis</span>
+                        </div>
+
+                        <div class="technology-item">
+                            <strong>Plumber</strong>
+                            <span>Frontend ↔ R connection</span>
+                        </div>
+
+                        <div class="technology-item">
+                            <strong>CSV</strong>
+                            <span>Historical data storage</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card about-card limitation-card">
+
+                    <span class="section-label">
+                        PROJECT LIMITATION
+                    </span>
+
+                    <h2>
+                        This is an estimation system.
+                    </h2>
+
+                    <p>
+                        EcoTrack does not physically measure water flow.
+                        It estimates usage using user-entered information
+                        and project assumptions. Therefore, its results are
+                        intended for educational analysis and awareness.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
